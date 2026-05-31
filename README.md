@@ -1,4 +1,5 @@
 # tinywasm/html
+<img src="docs/img/badges.svg">
 
 HTML element builder API for TinyWasm components.
 
@@ -28,15 +29,15 @@ It was separated from `tinywasm/dom` so that `dom` can focus solely on DOM manip
 
 ## SSR HTML Templates
 
-Components that need a custom SSR template implement `RenderHTML() *HTML` in their `html.go` file:
+Components that need a custom SSR template implement `RenderHTML() string` in their `html.go` file:
 
     //go:build !wasm
     package mycomponent
 
-    import "github.com/tinywasm/html"
+    import . "github.com/tinywasm/html"
 
-    func (c *MyComponent) RenderHTML() *html.HTML {
-        return html.New(Div(clsRoot.AsAttr()))
+    func (c *MyComponent) RenderHTML() string {
+        return Div(clsRoot.AsAttr()).String()
     }
 
 ## Available Builders
