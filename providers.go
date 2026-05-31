@@ -1,21 +1,27 @@
 package html
 
-// HTMLProvider is an optional capability: components that provide
-// a custom SSR HTML template fragment for injection by assetmin.
+// HTMLProvider is an optional capability: components that expose
+// a static SSR HTML template fragment for injection by assetmin.
 //
-// Implement this in a component's html.go file (//go:build !wasm).
-// Only needed when the component has a custom SSR HTML template distinct
-// from its Render() output. Most components do NOT need this.
+// Implement in a component's html.go file (//go:build !wasm).
+// Most components do NOT need this — only those with a static shell
+// distinct from their dynamic Render() output.
 //
 // Example in mycomponent/html.go:
 //
 //	//go:build !wasm
 //	package mycomponent
-//	import "github.com/tinywasm/html"
+//	import . "github.com/tinywasm/html"
 //
-//	func (c *MyComponent) RenderHTML() *html.HTML {
-//	    return html.New(Div(clsRoot.AsAttr(), /* ... */))
+//	func (c *MyComponent) RenderHTML() string {
+//	    return Div(clsRoot.AsAttr()).String()
+//	}
+//
+// For raw static HTML:
+//
+//	func (c *MyComponent) RenderHTML() string {
+//	    return `<div class="root"></div>`
 //	}
 type HTMLProvider interface {
-	RenderHTML() *HTML
+	RenderHTML() string
 }
