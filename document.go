@@ -14,14 +14,8 @@ type DocumentOptions struct {
 	Head       string // extra markup for <head> (optional)
 }
 
-// Document builds the complete document shell as *Element.
-// It returns the <html> element. Note that since dom.Element
-// represents a single tag, the <!DOCTYPE html> declaration
-// is not included in the returned *Element itself.
-//
-// To render the full document including doctype, use:
-//
-//	"<!DOCTYPE html>" + doc.String()
+// Document builds the complete document shell as *Element (the <html> element).
+// Does not include <!DOCTYPE html> — use DocumentString for the full output.
 func Document(opts DocumentOptions, body ...any) *Element {
 	if opts.Lang == "" {
 		opts.Lang = "en"
@@ -49,4 +43,10 @@ func Document(opts DocumentOptions, body ...any) *Element {
 	bodyEl := NewElement("body").Add(body...)
 
 	return NewElement("html").Attr("lang", opts.Lang).Add(head, bodyEl)
+}
+
+// DocumentString renders the full HTML document including <!DOCTYPE html>.
+// This is what assetmin writes to disk as index.html.
+func DocumentString(opts DocumentOptions, body ...any) string {
+	return "<!DOCTYPE html>" + Document(opts, body...).String()
 }

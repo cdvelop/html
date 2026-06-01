@@ -41,3 +41,13 @@ func TestDocument(t *testing.T) {
 		}
 	}
 }
+
+func TestDocumentString(t *testing.T) {
+	got := DocumentString(DocumentOptions{Title: "App"})
+	if !strings.HasPrefix(got, "<!DOCTYPE html>") {
+		t.Errorf("expected <!DOCTYPE html> prefix, got: %s", got[:30])
+	}
+	if !strings.Contains(got, "<html") {
+		t.Error("expected <html element")
+	}
+}
