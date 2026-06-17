@@ -1,3 +1,5 @@
+//go:build !wasm
+
 package html
 
 import (
@@ -13,6 +15,7 @@ var attrStartRegex = regexp.MustCompile(`(?i)\b(src|href)\s*=\s*`)
 // RewriteAssetURLs rewrites relative href/src attributes in an HTML fragment,
 // keeping only the filename and prepending newRoot.
 // It ignores absolute URLs, rooted paths, and non-file schemes (data:, mailto:, tel:, javascript:).
+// SSR/backend-only: this is excluded from wasm builds (its only caller, assetmin, is backend).
 func RewriteAssetURLs(htmlStr, newRoot string) string {
 	indices := attrStartRegex.FindAllStringIndex(htmlStr, -1)
 	if indices == nil {
@@ -36,7 +39,7 @@ func RewriteAssetURLs(htmlStr, newRoot string) string {
 			continue
 		}
 
-		quote := htmlStr[idx[1]:idx[1]+1]
+		quote := htmlStr[idx[1] : idx[1]+1]
 		if quote != "\"" && quote != "'" {
 			// Unquoted attribute or something else, skip for now to be safe
 			sb.WriteString(attrAndEq)
