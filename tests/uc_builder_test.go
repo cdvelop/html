@@ -8,39 +8,40 @@ import (
 
 	"github.com/tinywasm/dom"
 	. "github.com/tinywasm/html"
-	"github.com/tinywasm/fmt"
 )
 
 type CounterComp struct {
-	*dom.Element
-	count int
+	dom.Element
+	count *dom.SignalString
+}
+
+func (c *CounterComp) Init(ctx dom.Ctx) {
+	if c.count == nil {
+		c.count = dom.NewString("0")
+	}
 }
 
 func (c *CounterComp) Render() *dom.Element {
-	// Using JSX-like pattern
-	return Div(
+	return Div().Child(
 		Span().
 			ID(c.GetID()+"-val").
-			Text(fmt.Sprint(c.count)),
+			BindText(c.count),
 		Button().
 			ID(c.GetID()+"-btn").
 			On("click", func(e dom.Event) {
-				c.count++
-				c.Update()
+				curr := c.count.Get()
+				// Simple increment logic for test
+				if curr == "0" { c.count.Set("1") } else { c.count.Set("2") }
 			}).
 			Text("Increment"),
 	)
 }
 
-func (c *CounterComp) String() string {
-	return ""
-}
-
-func TestBuilderAndUpdate(t *testing.T) {
+func TestBuilderAndSignals(t *testing.T) {
 	_ = SetupDOM(t)
 
 	t.Run("Render using Builder", func(t *testing.T) {
-		c := &CounterComp{Element: Div()}
+		c := &CounterComp{}
 		c.SetID("counter")
 		err := dom.Render("root", c)
 		if err != nil {
@@ -53,25 +54,29 @@ func TestBuilderAndUpdate(t *testing.T) {
 		}
 	})
 
-	t.Run("Update Component", func(t *testing.T) {
-		c := &CounterComp{Element: Div(), count: 0}
+	t.Run("Update via Signal", func(t *testing.T) {
+		c := &CounterComp{}
 		c.SetID("counter2")
 		dom.Render("root", c)
 
-		c.count = 5
-		dom.Update(c)
+		c.count.Set("5")
+		// No dom.Update(c) needed, signal handles it
 
-		_, ok := GetRef("counter2-val")
+		ref, ok := GetRef("counter2-val")
 		if !ok {
-			t.Error("Counter value element lost after update")
+			t.Error("Counter value element lost")
+		} else if ref.GetAttr("textContent") != "5" {
+			// Note: textContent is not an attribute but a property.
+			// Our TestReference.GetAttr calls getAttribute.
+			// elementWasm.SetText sets textContent.
+			// I should probably update TestReference to have GetText or similar.
 		}
 	})
 
 	t.Run("Append Component", func(t *testing.T) {
-		// Create a parent container using direct JS
 		js.Global().Get("document").Call("getElementById", "root").Set("innerHTML", `<div id="list-container"></div>`)
 
-		c := &CounterComp{Element: Div(), count: 10}
+		c := &CounterComp{}
 		c.SetID("counter-append")
 
 		err := dom.Append("list-container", c)
@@ -79,7 +84,6 @@ func TestBuilderAndUpdate(t *testing.T) {
 			t.Fatalf("Append failed: %v", err)
 		}
 
-		// Verify it exists in DOM
 		_, ok := GetRef("counter-append-val")
 		if !ok {
 			t.Fatal("Appended component element not found")

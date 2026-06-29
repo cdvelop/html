@@ -9,28 +9,31 @@ import (
 	. "github.com/tinywasm/html"
 )
 
-// R1: .On() in Render() captures state updated after Update()
+// R1: BindText patterns capture state updated after Signal.Set()
 type StateCapturer struct {
 	dom.Element
-	Value string
+	Value *dom.SignalString
 	LastCaptured string
 }
 
+func (c *StateCapturer) Init(ctx dom.Ctx) {
+	c.Value = dom.NewString("v1")
+}
+
 func (c *StateCapturer) Render() *dom.Element {
-	return Div(
+	return Div().Child(
 		Button().ID("btn-r1").On("click", func(e dom.Event) {
-			c.LastCaptured = c.Value
+			c.LastCaptured = c.Value.Get()
 		}),
 	)
 }
 
 func TestR1StateCapture(t *testing.T) {
 	SetupDOM(t)
-	c := &StateCapturer{Value: "v1"}
+	c := &StateCapturer{}
 	dom.Render("root", c)
 
-	c.Value = "v2"
-	c.Update()
+	c.Value.Set("v2")
 
 	TriggerEvent("btn-r1", "click", "")
 	if c.LastCaptured != "v2" {
@@ -38,17 +41,22 @@ func TestR1StateCapture(t *testing.T) {
 	}
 }
 
-// R3: Race conditions / Re-wiring during Update()
+// R3: Race conditions / Re-wiring during Signal updates
 type RewireComp struct {
 	dom.Element
 	Fired int
+	Trigger *dom.SignalBool
+}
+
+func (c *RewireComp) Init(ctx dom.Ctx) {
+	c.Trigger = dom.NewBool(false)
 }
 
 func (c *RewireComp) Render() *dom.Element {
-	return Div(
+	return Div().Child(
 		Button().ID("btn-r3").On("click", func(e dom.Event) {
 			c.Fired++
-			c.Update()
+			c.Trigger.Toggle()
 		}),
 	)
 }

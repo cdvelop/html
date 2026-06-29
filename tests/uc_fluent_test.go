@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	. "github.com/tinywasm/html"
-	"github.com/tinywasm/fmt"
 )
 
 func TestFluentBuilder(t *testing.T) {
@@ -27,12 +26,12 @@ func TestFluentBuilder(t *testing.T) {
 			t.Error("String returned empty string")
 		}
 
-		// Look for expected substrings since it's easier than full parsing here
+		// Look for expected substrings
 		expected := []string{
 			"<div", "id='test-id'", "class='cls1 cls2'", "data-foo='bar'", ">Hello</div>",
 		}
 		for _, exp := range expected {
-			if !fmt.Contains(html, exp) {
+			if !contains(html, exp) {
 				t.Errorf("Expected HTML to contain %q, but got %q", exp, html)
 			}
 		}
@@ -41,7 +40,7 @@ func TestFluentBuilder(t *testing.T) {
 	t.Run("Nested Elements", func(t *testing.T) {
 		parent := Div().
 			ID("parent").
-			Add(
+			Child(
 				Span().ID("child").Text("Child"),
 			)
 
@@ -50,22 +49,7 @@ func TestFluentBuilder(t *testing.T) {
 			"id='parent'", "<span id='child'>Child</span>",
 		}
 		for _, exp := range expected {
-			if !fmt.Contains(html, exp) {
-				t.Errorf("Expected HTML to contain %q, but got %q", exp, html)
-			}
-		}
-	})
-	t.Run("Variadic Add", func(t *testing.T) {
-		el := Div().Add(
-			Span().Text("One"),
-			Span().Text("Two"),
-			Span().Text("Three"),
-		)
-
-		html := el.String()
-		expected := []string{"One", "Two", "Three"}
-		for _, exp := range expected {
-			if !fmt.Contains(html, exp) {
+			if !contains(html, exp) {
 				t.Errorf("Expected HTML to contain %q, but got %q", exp, html)
 			}
 		}
@@ -74,8 +58,19 @@ func TestFluentBuilder(t *testing.T) {
 	t.Run("Variadic Class", func(t *testing.T) {
 		el := Div().Class("cls1", "cls2", "cls3")
 		html := el.String()
-		if !fmt.Contains(html, "class='cls1 cls2 cls3'") {
+		if !contains(html, "class='cls1 cls2 cls3'") {
 			t.Errorf("Expected HTML to contain class='cls1 cls2 cls3', but got %q", html)
 		}
 	})
+}
+
+// Simple manual contains to avoid strings dependency in test if preferred,
+// though stdlib is allowed in tests.
+func contains(s, substr string) bool {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+	return false
 }

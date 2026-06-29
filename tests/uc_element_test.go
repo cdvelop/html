@@ -14,7 +14,7 @@ func TestElementMethods(t *testing.T) {
 	doc := SetupDOM(t)
 
 	// Mount a component to test on
-	comp := &MockComponent{Element: Div()}
+	comp := &MockComponent{Element: *Div()}
 	comp.SetID("comp-elem")
 	dom.Render("root", comp)
 
@@ -30,8 +30,6 @@ func TestElementMethods(t *testing.T) {
 	rawEl := getRaw("comp-elem")
 
 	t.Run("Classes", func(t *testing.T) {
-		// Use direct JS to set classes, then verify with Reference interface if possible
-		// (Simplified Reference doesn't have class methods)
 		rawEl.Get("classList").Call("add", "test-class")
 		if !rawEl.Get("classList").Call("contains", "test-class").Bool() {
 			t.Error("AddClass failed")

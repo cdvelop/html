@@ -3,7 +3,6 @@
 package html_test
 
 import (
-	"syscall/js"
 	"testing"
 
 	"github.com/tinywasm/dom"
@@ -49,7 +48,7 @@ func TestLifecycle(t *testing.T) {
 	})
 
 	t.Run("Mount Component", func(t *testing.T) {
-		comp := &MockComponent{Element: Div()}
+		comp := &MockComponent{Element: *Div()}
 		comp.SetID("comp1")
 		err := dom.Render("root", comp)
 		if err != nil {
@@ -57,7 +56,7 @@ func TestLifecycle(t *testing.T) {
 		}
 
 		if !comp.Mounted {
-			t.Error("OnMount was not called")
+			t.Error("Init was not called")
 		}
 
 		el, ok := GetRef("comp1")
@@ -70,40 +69,30 @@ func TestLifecycle(t *testing.T) {
 	})
 
 	t.Run("Unmount Component", func(t *testing.T) {
-		comp := &MockComponent{Element: Div()}
-		comp.SetID("comp1")
-		// Note: comp1 is already mounted from previous test if we share DOM state,
-		// but setupDOM clears body. Wait, setupDOM is called once per TestLifecycle.
-		// So state persists between sub-tests.
+		comp := &MockComponent{Element: *Div()}
+		comp.SetID("comp2")
+		dom.Render("root", comp)
 
 		// Unmount via replacement
 		dom.Render("root", Div().ID("root-placeholder"))
+
 		if comp.Mounted {
-			// See previous note about new struct instance
+			t.Error("Component should be unmounted after replacement")
 		}
 
-		_, ok := GetRef("comp1")
+		_, ok := GetRef("comp2")
 		if ok {
-			t.Error("Element should be removed from cache")
+			t.Error("Element should be removed from DOM")
 		}
 	})
 
 	t.Run("Mount Invalid Parent", func(t *testing.T) {
-		comp := &MockComponent{Element: Div()}
+		comp := &MockComponent{Element: *Div()}
 		comp.SetID("comp-invalid")
 		err := dom.Render("invalid-parent-id", comp)
 		if err == nil {
 			t.Error("Expected error when mounting to invalid parent")
 		}
-	})
-
-	t.Run("Unmount No Listeners", func(t *testing.T) {
-		comp := &MockComponent{Element: Div()}
-		comp.SetID("comp-no-listeners")
-		// Need to add parent first
-		js.Global().Get("document").Call("getElementById", "root").Set("innerHTML", `<div id="root-no-listeners"></div>`)
-		dom.Render("root-no-listeners", comp)
-		// dom.Unmount removed
 	})
 
 	t.Run("Get Cache Hit", func(t *testing.T) {

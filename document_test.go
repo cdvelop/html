@@ -17,10 +17,10 @@ func TestDocument(t *testing.T) {
 		Head:       "<meta name=\"theme-color\" content=\"#000\">",
 	}
 
-	doc := Document(opts, Div("Hola Mundo"))
+	doc := Document(opts, Div().Text("Hola Mundo"))
+
 	got := doc.String()
 
-	// Check with both quote styles just in case, but usually tinywasm/dom uses single quotes for attributes
 	checks := []string{
 		"lang='es'",
 		"<title>Mi App</title>",

@@ -9,66 +9,60 @@ import (
 	. "github.com/tinywasm/html"
 )
 
-// SearchChild simulates a component with OnMount input listener (like selectsearch).
 type SearchChild struct {
 	dom.Element
-	FilterTerm  string
-	InputEvents int // counts how many times the input handler fired
+	InputEvents *dom.SignalString // misuse signal to count events for simplicity in test
+	count int
 }
 
 func (c *SearchChild) Render() *dom.Element {
-	return Div(
-		Input("search").
-			ID(c.GetID()+"-search").
-			Attr("value", c.FilterTerm).
-			On("input", func(e dom.Event) {
-				c.FilterTerm = e.TargetValue()
-				c.InputEvents++
-				c.Update()
-			}),
-	)
+	return Input("text").
+		ID(c.GetID()+"-input").
+		On("input", func(e dom.Event) {
+			c.count++
+			// c.InputEvents.Set(...)
+		})
 }
 
-// ParentWithChild holds a SearchChild in state (not created inside Render).
 type ParentWithChild struct {
 	dom.Element
-	child    SearchChild
-	updates  int
+	child *SearchChild
+	toggle *dom.SignalBool
 }
 
-func (p *ParentWithChild) Render() *dom.Element {
-	return Div(
-		&p.child,
-		P("updates: ", p.updates),
+func (c *ParentWithChild) Init(ctx dom.Ctx) {
+	c.child = &SearchChild{}
+	c.toggle = dom.NewBool(true)
+}
+
+func (c *ParentWithChild) Render() *dom.Element {
+	return Div().Child(
+		dom.Show(c.toggle, func() *dom.Element {
+			return c.child.Render()
+		}),
+		Button().ID("toggle-btn").On("click", func(e dom.Event) {
+			c.toggle.Toggle()
+		}),
 	)
 }
 
-func TestChildListenersAfterParentUpdate(t *testing.T) {
+func TestChildListenersWithSignals(t *testing.T) {
 	SetupDOM(t)
-
 	parent := &ParentWithChild{}
-	if err := dom.Render("root", parent); err != nil {
-		t.Fatalf("Render failed: %v", err)
+	dom.Render("root", parent)
+
+	id := parent.child.GetID() + "-input"
+	TriggerEvent(id, "input", "a")
+	if parent.child.count != 1 {
+		t.Errorf("expected 1 input event, got %d", parent.child.count)
 	}
 
-	childID := parent.child.GetID()
-	searchID := childID + "-search"
+	// Toggle off and on
+	TriggerEvent("toggle-btn", "click", "")
+	TriggerEvent("toggle-btn", "click", "")
 
-	// Verify OnMount wired the listener — first input event before any Update.
-	TriggerEvent(searchID, "input", "ab")
-	if parent.child.InputEvents != 1 {
-		t.Errorf("before Update: expected 1 input event, got %d", parent.child.InputEvents)
-	}
-
-	// Simulate parent updating (e.g. from some parent-level state change).
-	parent.updates++
-	parent.Update()
-
-	// BUG: after parent Update(), child input listener should still work.
-	// The child element is re-rendered with the same ID so the DOM element exists,
-	// but the input handler may have been lost.
-	TriggerEvent(searchID, "input", "abc")
-	if parent.child.InputEvents != 2 {
-		t.Errorf("after parent Update: expected 2 input events, got %d — listener lost after parent re-render", parent.child.InputEvents)
+	TriggerEvent(id, "input", "b")
+	if parent.child.count != 2 {
+		t.Errorf("expected 2 input events, got %d", parent.child.count)
 	}
 }

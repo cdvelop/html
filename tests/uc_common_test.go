@@ -11,37 +11,28 @@ import (
 
 // MockComponent is a simple component for testing.
 type MockComponent struct {
-	*dom.Element
+	dom.Element
 	Mounted bool
 }
 
-// HandlerName removed in favor of Identifiable.GetID() provided by BaseComponent
-
-func (c *MockComponent) Render() *dom.Element {
-	return c.Element
+func (c *MockComponent) Init(ctx dom.Ctx) {
+	c.Mounted = true
+	ctx.OnCleanup(func() {
+		c.Mounted = false
+	})
 }
 
-func (c *MockComponent) AsElement() *dom.Element {
-	return c.Element
+func (c *MockComponent) Render() *dom.Element {
+	return &c.Element
 }
 
 func (c *MockComponent) String() string {
 	return c.Element.String()
 }
 
-func (c *MockComponent) OnMount() {
-	c.Mounted = true
-}
-
-func (c *MockComponent) OnUnmount() {
-	c.Mounted = false
-}
-
 func SetupDOM(t *testing.T) js.Value {
 	doc := js.Global().Get("document")
 	body := doc.Get("body")
-
-	// Do not clear body as it might contain test runner UI
 
 	// Create or get root element
 	root := doc.Call("getElementById", "root")
@@ -114,6 +105,8 @@ func (r *TestReference) On(eventType string, handler func(event dom.Event)) {
 	fn := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		var e dom.Event
 		if len(args) > 0 {
+			// In a real test we might want a real eventWasm wrapper if we had access,
+			// but MockEvent is fine for tests.
 			e = &MockEvent{val: args[0]}
 		}
 		handler(e)
@@ -170,6 +163,7 @@ func TriggerEvent(id, eventType string, value string) {
 		if value != "" {
 			rawEl.Set("value", value)
 		}
+		// Use UIEvent or InputEvent if needed, but Event is usually enough for DispatchEvent
 		event := js.Global().Get("Event").New(eventType, map[string]interface{}{
 			"bubbles": true,
 		})

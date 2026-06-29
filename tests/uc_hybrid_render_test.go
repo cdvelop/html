@@ -11,16 +11,16 @@ import (
 
 // DynamicComp uses ViewRenderer (DSL)
 type DynamicComp struct {
-	*dom.Element
+	dom.Element
 }
 
 func (c *DynamicComp) Render() *dom.Element {
 	return Div().ID("dynamic").Text("Dynamic Content")
 }
 
-// StaticComp uses HTMLRenderer (String)
+// StaticComp uses String()
 type StaticComp struct {
-	*dom.Element
+	dom.Element
 }
 
 func (c *StaticComp) String() string {
@@ -31,21 +31,17 @@ func TestHybridRendering(t *testing.T) {
 	_ = SetupDOM(t)
 
 	t.Run("Render Dynamic Component (DSL)", func(t *testing.T) {
-		c := &DynamicComp{Element: Div()}
+		c := &DynamicComp{}
 		dom.Render("root", c)
 
-		el, ok := GetRef("dynamic")
+		_, ok := GetRef("dynamic")
 		if !ok {
 			t.Fatal("Dynamic component not rendered")
-		}
-		if el.Value() != "" { // Check content? Value() is for inputs.
-			// Element interface doesn't expose InnerText/HTML easily except SetHTML.
-			// We trust ID existence for now.
 		}
 	})
 
 	t.Run("Render Static Component (String)", func(t *testing.T) {
-		c := &StaticComp{Element: Div()}
+		c := &StaticComp{}
 		dom.Render("root", c)
 
 		_, ok := GetRef("static")
