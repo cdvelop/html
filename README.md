@@ -20,11 +20,11 @@ It was separated from `tinywasm/dom` so that `dom` can focus solely on DOM manip
     )
 
     func (c *MyComponent) Render() *dom.Element {
-        return Div(
-            H1("Welcome"),
-            P("Minimalist UI."),
-            Button("Click").On("click", func(e dom.Event) {}),
-        ).Class("container")
+        return Div().Class("container").Child(
+            H1().Text("Welcome"),
+            P().Text("Minimalist UI."),
+            Button().Text("Click").On("click", func(e dom.Event) {}),
+        )
     }
 
 ## SSR HTML Templates
@@ -37,7 +37,7 @@ Components that need a custom SSR template implement `RenderHTML() string` in th
     import . "github.com/tinywasm/html"
 
     func (c *MyComponent) RenderHTML() string {
-        return Div(clsRoot.AsAttr()).String()
+        return Div().Set(clsRoot.AsAttr()).String()
     }
 
 ## Available Builders

@@ -108,7 +108,7 @@ func TestLifecycleDeep(t *testing.T) {
 	_ = SetupDOM(t)
 
 	t.Run("Nested components cleanup", func(t *testing.T) {
-		child := &MockComponent{}
+		child := &MockComponent{Element: *Div()}
 		child.SetID("child-comp")
 		parent := Div().ID("parent-comp").Child(child)
 
@@ -125,7 +125,7 @@ func TestLifecycleDeep(t *testing.T) {
 	})
 
 	t.Run("ElementNode in children", func(t *testing.T) {
-		c := &MockComponent{}
+		c := &MockComponent{Element: *Div()}
 		c.SetID("mock-child")
 		el := Div().Child(c)
 		html := el.String()

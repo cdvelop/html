@@ -34,7 +34,7 @@ func TestEvents(t *testing.T) {
 	doc := SetupDOM(t)
 
 	t.Run("Basic Event Handling", func(t *testing.T) {
-		comp := &MockComponent{}
+		comp := &MockComponent{Element: *Div()}
 		comp.SetID("comp-basic-event")
 		dom.Render("root", comp)
 		el, _ := GetRef("comp-basic-event")

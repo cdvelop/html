@@ -48,7 +48,7 @@ func TestBodyHeadResolution(t *testing.T) {
 	})
 
 	t.Run("Append to head", func(t *testing.T) {
-		comp := &MockComponent{}
+		comp := &MockComponent{Element: *Div()}
 		comp.SetID("head-item")
 		err := dom.Append("head", comp)
 		if err != nil {

@@ -48,7 +48,7 @@ func TestLifecycle(t *testing.T) {
 	})
 
 	t.Run("Mount Component", func(t *testing.T) {
-		comp := &MockComponent{}
+		comp := &MockComponent{Element: *Div()}
 		comp.SetID("comp1")
 		err := dom.Render("root", comp)
 		if err != nil {
@@ -69,7 +69,7 @@ func TestLifecycle(t *testing.T) {
 	})
 
 	t.Run("Unmount Component", func(t *testing.T) {
-		comp := &MockComponent{}
+		comp := &MockComponent{Element: *Div()}
 		comp.SetID("comp2")
 		dom.Render("root", comp)
 
@@ -87,7 +87,7 @@ func TestLifecycle(t *testing.T) {
 	})
 
 	t.Run("Mount Invalid Parent", func(t *testing.T) {
-		comp := &MockComponent{}
+		comp := &MockComponent{Element: *Div()}
 		comp.SetID("comp-invalid")
 		err := dom.Render("invalid-parent-id", comp)
 		if err == nil {

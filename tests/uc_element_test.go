@@ -7,13 +7,14 @@ import (
 	"testing"
 
 	"github.com/tinywasm/dom"
+	. "github.com/tinywasm/html"
 )
 
 func TestElementMethods(t *testing.T) {
 	doc := SetupDOM(t)
 
 	// Mount a component to test on
-	comp := &MockComponent{}
+	comp := &MockComponent{Element: *Div()}
 	comp.SetID("comp-elem")
 	dom.Render("root", comp)
 
