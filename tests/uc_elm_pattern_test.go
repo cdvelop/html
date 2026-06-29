@@ -7,52 +7,44 @@ import (
 
 	"github.com/tinywasm/dom"
 	. "github.com/tinywasm/html"
-	"github.com/tinywasm/fmt"
 )
 
 type CounterElm struct {
-	*dom.Element
-	count int
+	dom.Element
+	count *dom.SignalString
+}
+
+func (c *CounterElm) Init(ctx dom.Ctx) {
+	c.count = dom.NewString("0")
 }
 
 func (c *CounterElm) Render() *dom.Element {
-	return Div().
-		Add(
-			Span().ID("count-val").Text(fmt.Sprint(c.count)),
-		)
-}
-
-func (c *CounterElm) Increment() {
-	c.count++
-	c.Update()
+	return Div().Child(
+		Span().ID("count-val").BindText(c.count),
+	)
 }
 
 func TestElmPattern(t *testing.T) {
 	_ = SetupDOM(t)
 
 	t.Run("State Update and Re-render", func(t *testing.T) {
-		c := &CounterElm{Element: Div(), count: 0}
-		c.SetID("counter-elm") // Fixed ID for test stability
+		c := &CounterElm{}
+		c.SetID("counter-elm")
 		dom.Render("root", c)
 
 		// Check initial render
-		el, ok := GetRef("count-val")
+		_, ok := GetRef("count-val")
 		if !ok {
 			t.Fatal("Counter value not found")
 		}
-		// We can't easily check text content via Element interface in WASM tests running in node/headless?
-		// Unless we expose GetTextContent in Element interface.
-		// Existing Element interface: SetText, SetHTML. No GetText.
-		// elementWasm has GetAttr.
 
-		// Perform update
-		c.Increment()
+		// Perform update via signal
+		c.count.Set("1")
 
 		// Verify re-render occurred (no error)
-		el, ok = GetRef("count-val")
+		_, ok = GetRef("count-val")
 		if !ok {
 			t.Fatal("Counter value lost after update")
 		}
-		_ = el
 	})
 }

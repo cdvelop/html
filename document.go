@@ -16,37 +16,37 @@ type DocumentOptions struct {
 
 // Document builds the complete document shell as *Element (the <html> element).
 // Does not include <!DOCTYPE html> — use DocumentString for the full output.
-func Document(opts DocumentOptions, body ...any) *Element {
+func Document(opts DocumentOptions, body ...Component) *Element {
 	if opts.Lang == "" {
 		opts.Lang = "en"
 	}
 
 	head := NewElement("head")
-	head.Add(NewElement("meta").NoCloseTag().Attr("charset", "utf-8"))
+	head.Child(NewElement("meta").NoCloseTag().Attr("charset", "utf-8"))
 
 	if opts.Title != "" {
-		head.Add(NewElement("title").Add(opts.Title))
+		head.Child(NewElement("title").Text(opts.Title))
 	}
 	if opts.FaviconURL != "" {
-		head.Add(NewElement("link").NoCloseTag().Attr("rel", "icon").Attr("href", opts.FaviconURL))
+		head.Child(NewElement("link").NoCloseTag().Attr("rel", "icon").Attr("href", opts.FaviconURL))
 	}
 	if opts.CSSURL != "" {
-		head.Add(NewElement("link").NoCloseTag().Attr("rel", "stylesheet").Attr("href", opts.CSSURL))
+		head.Child(NewElement("link").NoCloseTag().Attr("rel", "stylesheet").Attr("href", opts.CSSURL))
 	}
 	if opts.JSURL != "" {
-		head.Add(NewElement("script").Attr("src", opts.JSURL).Attr("defer", ""))
+		head.Child(NewElement("script").Attr("src", opts.JSURL).Attr("defer", ""))
 	}
 	if opts.Head != "" {
-		head.Add(opts.Head)
+		head.Text(opts.Head)
 	}
 
-	bodyEl := NewElement("body").Add(body...)
+	bodyEl := NewElement("body").Child(body...)
 
-	return NewElement("html").Attr("lang", opts.Lang).Add(head, bodyEl)
+	return NewElement("html").Attr("lang", opts.Lang).Child(head, bodyEl)
 }
 
 // DocumentString renders the full HTML document including <!DOCTYPE html>.
 // This is what assetmin writes to disk as index.html.
-func DocumentString(opts DocumentOptions, body ...any) string {
+func DocumentString(opts DocumentOptions, body ...Component) string {
 	return "<!DOCTYPE html>" + Document(opts, body...).String()
 }

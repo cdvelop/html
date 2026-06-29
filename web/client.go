@@ -3,7 +3,7 @@
 package main
 
 import (
-	. "github.com/tinywasm/dom"
+	"github.com/tinywasm/dom"
 	. "github.com/tinywasm/html"
 	"github.com/tinywasm/fmt"
 )
@@ -11,15 +11,19 @@ import (
 // --- App State & Components ---
 
 type App struct {
-	Element
-	currentRoute string
-	counter      int
+	dom.Element
+	currentRoute *dom.SignalString
+	counter      *dom.SignalString
+	countVal     int
 }
 
-func (a *App) Init() {
+func (a *App) Init(ctx dom.Ctx) {
+	a.currentRoute = dom.NewString("#home")
+	a.counter = dom.NewString("0")
+
 	// 0. Restore theme from localStorage
-	if theme, _ := LocalStorageGet("theme"); theme != "" {
-		SetDocumentAttr("data-theme", theme)
+	if theme, _ := dom.LocalStorageGet("theme"); theme != "" {
+		dom.SetDocumentAttr("data-theme", theme)
 	}
 
 	// 1. Inject minimal CSS
@@ -39,96 +43,96 @@ func (a *App) Init() {
 	renderStyle(css)
 
 	// 2. Setup Routing
-	OnHashChange(func(hash string) {
-		a.currentRoute = hash
-		a.Update()
+	dom.OnHashChange(func(hash string) {
+		a.currentRoute.Set(hash)
 	})
 
 	// Initial route
-	a.currentRoute = GetHash()
-	if a.currentRoute == "" {
-		a.currentRoute = "#home"
-		SetHash("#home")
+	hash := dom.GetHash()
+	if hash == "" {
+		hash = "#home"
+		dom.SetHash("#home")
 	}
+	a.currentRoute.Set(hash)
 }
 
-func (a *App) Render() *Element {
-	return Div(
+func (a *App) Render() *dom.Element {
+	return Div().Child(
 		// Navigation Bar
-		Nav(
-			NavLink("Home", "#home", a.currentRoute == "#home"),
-			NavLink("About", "#about", a.currentRoute == "#about"),
+		Nav().Child(
+			NavLink("Home", "#home", a.currentRoute),
+			NavLink("About", "#about", a.currentRoute),
 		),
 
 		// Content Area
-		Div(
-			a.renderRoute(),
+		Div().Child(
+			dom.Show(dom.DeriveBool(func() bool { return a.currentRoute.Get() == "#about" }), a.renderAbout),
+			dom.Show(dom.DeriveBool(func() bool { return a.currentRoute.Get() == "#home" || a.currentRoute.Get() == "" }), a.renderHome),
 		).Class("container"),
 	)
 }
 
-func (a *App) toggleTheme() {
-	current := GetDocumentAttr("data-theme")
-	next := "dark"
-	if current == "dark" {
-		next = "light"
-	}
-	SetDocumentAttr("data-theme", next)
-	LocalStorageSet("theme", next)
-	a.Update()
+func (a *App) renderAbout() *dom.Element {
+	return Div().Child(
+		H1().Text("Sobre Esta Libreria."),
+		P().Text("tinywasm/dom is a minimalist, WASM-optimized DOM toolkit for Go."),
+		P().Text("It features a JSX-like Builder API, Elm-inspired state management, and no Virtual DOM overhead."),
+	).Class("card")
 }
 
-func (a *App) renderRoute() *Element {
-	switch a.currentRoute {
-	case "#about":
-		return Div(
-			H1("Sobre Esta Libreria."),
-			P("tinywasm/dom is a minimalist, WASM-optimized DOM toolkit for Go."),
-			P("It features a JSX- like Builder API, Elm-inspired state management, and no Virtual DOM overhead."),
-		).Class("card")
-	default: // "#home"
-		return Div(
-			H1("Counter Example"),
-			P("This demonstrates local state updates and hash routing."),
-			Div(
-				Button("-").On("click", func(e Event) { a.counter--; a.Update() }),
-				Span(fmt.Sprint(a.counter)).Class("count"),
-				Button("+").On("click", func(e Event) { a.counter++; a.Update() }),
-			).Class("btn-group"),
+func (a *App) renderHome() *dom.Element {
+	return Div().Child(
+		H1().Text("Counter Example"),
+		P().Text("This demonstrates local state updates and hash routing."),
+		Div().Child(
+			Button().Text("-").On("click", func(e dom.Event) {
+				a.countVal--
+				a.counter.Set(fmt.Sprint(a.countVal))
+			}),
+			Span().BindText(a.counter).Class("count"),
+			Button().Text("+").On("click", func(e dom.Event) {
+				a.countVal++
+				a.counter.Set(fmt.Sprint(a.countVal))
+			}),
+		).Class("btn-group"),
 
-			H2("Persistence & Attributes"),
-			P("The theme is persisted in localStorage and applied to <html>."),
-			Div(
-				Button("Toggle Theme").On("click", func(e Event) { a.toggleTheme() }),
-			).Class("btn-group"),
-		).Class("card")
-	}
+		H2().Text("Persistence & Attributes"),
+		P().Text("The theme is persisted in localStorage and applied to <html>."),
+		Div().Child(
+			Button().Text("Toggle Theme").On("click", func(e dom.Event) {
+				current := dom.GetDocumentAttr("data-theme")
+				next := "dark"
+				if current == "dark" {
+					next = "light"
+				}
+				dom.SetDocumentAttr("data-theme", next)
+				dom.LocalStorageSet("theme", next)
+			}),
+		).Class("btn-group"),
+	).Class("card")
 }
 
 // --- Helpers ---
 
-func NavLink(text, hash string, active bool) *Element {
-	link := A(hash, text).On("click", func(e Event) {
-		e.PreventDefault()
-		SetHash(hash)
-	})
-	if active {
-		link.Class("active")
-	}
-	return link
+func NavLink(text, hash string, currentRoute *dom.SignalString) *dom.Element {
+	return A(hash).
+		Text(text).
+		On("click", func(e dom.Event) {
+			e.PreventDefault()
+			dom.SetHash(hash)
+		}).
+		BindClass("active", dom.DeriveBool(func() bool {
+			return currentRoute.Get() == hash
+		}))
 }
 
 func renderStyle(css string) {
 	// Inject style into head
-	Append("head", Style(css))
+	dom.Append("head", Style().Text(css))
 }
 
 func main() {
 	app := &App{}
-	app.Init()
-
-	Render("app", app)
-
-	fmt.Println("Showcase App running on:", app.currentRoute)
+	dom.Render("app", app)
 	select {}
 }

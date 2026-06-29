@@ -4,11 +4,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/tinywasm/fmt"
 	. "github.com/tinywasm/html"
 )
 
 func TestDiv_Basic(t *testing.T) {
-	el := Div(H2("Hello"), P("World")).Class("root")
+	el := Div().Child(H2().Text("Hello"), P().Text("World")).Class("root")
 	got := el.String()
 	if !strings.Contains(got, `class='root'`) {
 		t.Errorf("expected class root, got %q", got)
@@ -22,7 +23,7 @@ func TestDiv_Basic(t *testing.T) {
 }
 
 func TestA_HasHref(t *testing.T) {
-	el := A("/home", "Home")
+	el := A("/home").Text("Home")
 	got := el.String()
 	if !strings.Contains(got, `href='/home'`) {
 		t.Errorf("expected href, got %q", got)
@@ -45,5 +46,14 @@ func TestBr_IsVoid(t *testing.T) {
 	got := Br().String()
 	if strings.Contains(got, "</br>") {
 		t.Error("br should be void")
+	}
+}
+
+func TestSet(t *testing.T) {
+	kv := fmt.KeyValue{Key: "data-id", Value: "123"}
+	el := Div().Set(kv)
+	got := el.String()
+	if !strings.Contains(got, "data-id='123'") {
+		t.Errorf("expected data-id='123', got %q", got)
 	}
 }

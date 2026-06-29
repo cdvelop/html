@@ -5,76 +5,76 @@ import (
 )
 
 // Block containers
-func Div(children ...any) *Element        { return NewElement("div").Add(children...) }
-func Span(children ...any) *Element       { return NewElement("span").Add(children...) }
-func P(children ...any) *Element          { return NewElement("p").Add(children...) }
-func Pre(children ...any) *Element        { return NewElement("pre").Add(children...) }
-func Code(children ...any) *Element       { return NewElement("code").Add(children...) }
-func Strong(children ...any) *Element     { return NewElement("strong").Add(children...) }
-func Small(children ...any) *Element      { return NewElement("small").Add(children...) }
-func Mark(children ...any) *Element       { return NewElement("mark").Add(children...) }
+func Div() *Element    { return NewElement("div") }
+func Span() *Element   { return NewElement("span") }
+func P() *Element      { return NewElement("p") }
+func Pre() *Element    { return NewElement("pre") }
+func Code() *Element   { return NewElement("code") }
+func Strong() *Element { return NewElement("strong") }
+func Small() *Element  { return NewElement("small") }
+func Mark() *Element   { return NewElement("mark") }
 
 // Headings
-func H1(children ...any) *Element { return NewElement("h1").Add(children...) }
-func H2(children ...any) *Element { return NewElement("h2").Add(children...) }
-func H3(children ...any) *Element { return NewElement("h3").Add(children...) }
-func H4(children ...any) *Element { return NewElement("h4").Add(children...) }
-func H5(children ...any) *Element { return NewElement("h5").Add(children...) }
-func H6(children ...any) *Element { return NewElement("h6").Add(children...) }
+func H1() *Element { return NewElement("h1") }
+func H2() *Element { return NewElement("h2") }
+func H3() *Element { return NewElement("h3") }
+func H4() *Element { return NewElement("h4") }
+func H5() *Element { return NewElement("h5") }
+func H6() *Element { return NewElement("h6") }
 
 // Lists
-func Ul(children ...any) *Element { return NewElement("ul").Add(children...) }
-func Ol(children ...any) *Element { return NewElement("ol").Add(children...) }
-func Li(children ...any) *Element { return NewElement("li").Add(children...) }
+func Ul() *Element { return NewElement("ul") }
+func Ol() *Element { return NewElement("ol") }
+func Li() *Element { return NewElement("li") }
 
 // Semantic layout
-func Nav(children ...any) *Element        { return NewElement("nav").Add(children...) }
-func Section(children ...any) *Element    { return NewElement("section").Add(children...) }
-func Main(children ...any) *Element       { return NewElement("main").Add(children...) }
-func Article(children ...any) *Element    { return NewElement("article").Add(children...) }
-func Header(children ...any) *Element     { return NewElement("header").Add(children...) }
-func Footer(children ...any) *Element     { return NewElement("footer").Add(children...) }
-func Aside(children ...any) *Element      { return NewElement("aside").Add(children...) }
-func Details(children ...any) *Element    { return NewElement("details").Add(children...) }
-func Summary(children ...any) *Element    { return NewElement("summary").Add(children...) }
-func Dialog(children ...any) *Element     { return NewElement("dialog").Add(children...) }
-func Figure(children ...any) *Element     { return NewElement("figure").Add(children...) }
-func Figcaption(children ...any) *Element { return NewElement("figcaption").Add(children...) }
+func Nav() *Element        { return NewElement("nav") }
+func Section() *Element    { return NewElement("section") }
+func Main() *Element       { return NewElement("main") }
+func Article() *Element    { return NewElement("article") }
+func Header() *Element     { return NewElement("header") }
+func Footer() *Element     { return NewElement("footer") }
+func Aside() *Element      { return NewElement("aside") }
+func Details() *Element    { return NewElement("details") }
+func Summary() *Element    { return NewElement("summary") }
+func Dialog() *Element     { return NewElement("dialog") }
+func Figure() *Element     { return NewElement("figure") }
+func Figcaption() *Element { return NewElement("figcaption") }
 
 // Tables
-func Table(children ...any) *Element { return NewElement("table").Add(children...) }
-func Thead(children ...any) *Element { return NewElement("thead").Add(children...) }
-func Tbody(children ...any) *Element { return NewElement("tbody").Add(children...) }
-func Tfoot(children ...any) *Element { return NewElement("tfoot").Add(children...) }
-func Tr(children ...any) *Element    { return NewElement("tr").Add(children...) }
-func Th(children ...any) *Element    { return NewElement("th").Add(children...) }
-func Td(children ...any) *Element    { return NewElement("td").Add(children...) }
+func Table() *Element { return NewElement("table") }
+func Thead() *Element { return NewElement("thead") }
+func Tbody() *Element { return NewElement("tbody") }
+func Tfoot() *Element { return NewElement("tfoot") }
+func Tr() *Element    { return NewElement("tr") }
+func Th() *Element    { return NewElement("th") }
+func Td() *Element    { return NewElement("td") }
 
 // Form-adjacent (non-form elements)
-func Fieldset(children ...any) *Element { return NewElement("fieldset").Add(children...) }
-func Legend(children ...any) *Element   { return NewElement("legend").Add(children...) }
-func Label(children ...any) *Element    { return NewElement("label").Add(children...) }
-func Button(children ...any) *Element   { return NewElement("button").Add(children...) }
-func Canvas(children ...any) *Element   { return NewElement("canvas").Add(children...) }
-func Style(children ...any) *Element    { return NewElement("style").Add(children...) }
-func Script(children ...any) *Element   { return NewElement("script").Add(children...) }
+func Fieldset() *Element { return NewElement("fieldset") }
+func Legend() *Element   { return NewElement("legend") }
+func Label() *Element    { return NewElement("label") }
+func Button() *Element   { return NewElement("button") }
+func Canvas() *Element   { return NewElement("canvas") }
+func Style() *Element    { return NewElement("style") }
+func Script() *Element   { return NewElement("script") }
 
 // Special
-func A(href string, children ...any) *Element {
-	return NewElement("a").Attr("href", href).Add(children...)
+func A(href string) *Element {
+	return NewElement("a").Attr("href", href)
 }
 func Input(typ string) *Element {
 	return NewElement("input").NoCloseTag().Attr("type", typ)
 }
 func Option(value, text string) *Element {
-	return NewElement("option").Attr("value", value).Add(text)
+	return NewElement("option").Attr("value", value).Text(text)
 }
 func SelectedOption(value, text string) *Element {
-	return NewElement("option").Attr("value", value).Attr("selected", "").Add(text)
+	return NewElement("option").Attr("value", value).Attr("selected", "").Text(text)
 }
 func Br() *Element { return NewElement("br").NoCloseTag() }
 func Hr() *Element { return NewElement("hr").NoCloseTag() }
 
 // SVG placeholders to satisfy tests until tinywasm/svg is used
-func Svg(children ...any) *Element { return NewElement("svg").Add(children...) }
-func Use(children ...any) *Element { return NewElement("use").NoCloseTag().Add(children...) }
+func Svg() *Element { return NewElement("svg") }
+func Use() *Element { return NewElement("use").NoCloseTag() }
