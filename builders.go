@@ -75,6 +75,3 @@ func SelectedOption(value, text string) *Element {
 func Br() *Element { return NewElement("br").NoCloseTag() }
 func Hr() *Element { return NewElement("hr").NoCloseTag() }
 
-// SVG placeholders to satisfy tests until tinywasm/svg is used
-func Svg() *Element { return NewElement("svg") }
-func Use() *Element { return NewElement("use").NoCloseTag() }
