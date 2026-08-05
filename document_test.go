@@ -51,3 +51,66 @@ func TestDocumentString(t *testing.T) {
 		t.Error("expected <html element")
 	}
 }
+
+func TestDocumentViewportDefault(t *testing.T) {
+	got := DocumentString(DocumentOptions{})
+	if !strings.Contains(got, `name='viewport'`) && !strings.Contains(got, `name="viewport"`) {
+		t.Errorf("empty DocumentOptions must emit viewport meta, got: %s", got)
+	}
+	if !strings.Contains(got, "viewport-fit=cover") {
+		t.Errorf("empty DocumentOptions must emit viewport-fit=cover, got: %s", got)
+	}
+}
+
+func TestDocumentViewportOrder(t *testing.T) {
+	got := DocumentString(DocumentOptions{
+		CSSURL: "/styles.css",
+		JSURL:  "/bundle.js",
+	})
+	charsetIdx := indexOfMeta(got, "charset")
+	viewportIdx := indexOfMeta(got, "viewport")
+	linkIdx := strings.Index(got, "<link")
+	scriptIdx := strings.Index(got, "<script")
+	if charsetIdx < 0 {
+		t.Fatal("charset meta missing")
+	}
+	if viewportIdx < 0 {
+		t.Fatal("viewport meta missing")
+	}
+	if charsetIdx > viewportIdx {
+		t.Errorf("charset must appear before viewport: charset=%d viewport=%d", charsetIdx, viewportIdx)
+	}
+	if linkIdx >= 0 && viewportIdx > linkIdx {
+		t.Errorf("viewport must appear before link: viewport=%d link=%d", viewportIdx, linkIdx)
+	}
+	if scriptIdx >= 0 && viewportIdx > scriptIdx {
+		t.Errorf("viewport must appear before script: viewport=%d script=%d", viewportIdx, scriptIdx)
+	}
+}
+
+func TestDocumentViewportOnce(t *testing.T) {
+	got := DocumentString(DocumentOptions{})
+	count := strings.Count(got, "viewport")
+	// name=viewport + content containing viewport-fit → at least 2 substrings of "viewport"
+	// Guard: exactly one meta viewport tag (one name='viewport' or name="viewport")
+	nameCount := strings.Count(got, `name='viewport'`) + strings.Count(got, `name="viewport"`)
+	if nameCount != 1 {
+		t.Errorf("expected exactly one viewport meta, got %d (viewport substrings=%d)\n%s", nameCount, count, got)
+	}
+}
+
+func TestDocumentViewportNoZoomLock(t *testing.T) {
+	got := DocumentString(DocumentOptions{})
+	if strings.Contains(got, "user-scalable") {
+		t.Errorf("must not contain user-scalable, got: %s", got)
+	}
+	if strings.Contains(got, "maximum-scale") {
+		t.Errorf("must not contain maximum-scale, got: %s", got)
+	}
+}
+
+func indexOfMeta(s, needle string) int {
+	// Prefer name= / charset= attribute occurrence inside a meta tag region.
+	idx := strings.Index(s, needle)
+	return idx
+}

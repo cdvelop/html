@@ -26,11 +26,9 @@ func (c *SelfUpdater) Render() *dom.Element {
 			c.InputFired++
 			c.toggle.Set(true)
 		}),
-		dom.Show(c.toggle, func() *dom.Element {
-			return Div().ID(c.GetID()+"-options").On("click", func(e dom.Event) {
-				c.SelectFired++
-			}).Text("Options")
-		}),
+		dom.Show(c.toggle, Div().ID(c.GetID()+"-options").On("click", func(e dom.Event) {
+			c.SelectFired++
+		}).Text("Options")),
 	)
 }
 

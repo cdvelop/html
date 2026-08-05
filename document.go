@@ -23,6 +23,9 @@ func Document(opts DocumentOptions, body ...Component) *Element {
 
 	head := NewElement("head")
 	head.Child(NewElement("meta").NoCloseTag().Attr("charset", "utf-8"))
+	head.Child(NewElement("meta").NoCloseTag().
+		Attr("name", "viewport").
+		Attr("content", "width=device-width, initial-scale=1, viewport-fit=cover"))
 
 	if opts.Title != "" {
 		head.Child(NewElement("title").Text(opts.Title))

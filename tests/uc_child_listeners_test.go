@@ -37,9 +37,7 @@ func (c *ParentWithChild) Init(ctx dom.Ctx) {
 
 func (c *ParentWithChild) Render() *dom.Element {
 	return Div().Child(
-		dom.Show(c.toggle, func() *dom.Element {
-			return c.child.Render()
-		}),
+		dom.Show(c.toggle, c.child),
 		Button().ID("toggle-btn").On("click", func(e dom.Event) {
 			c.toggle.Toggle()
 		}),

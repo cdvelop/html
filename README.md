@@ -27,6 +27,13 @@ It was separated from `tinywasm/dom` so that `dom` can focus solely on DOM manip
         )
     }
 
+## Document shell
+
+`Document` / `DocumentString` emit the full HTML shell that assetmin writes as `index.html`:
+`<!DOCTYPE html>`, `<html lang>`, `<head>` with `charset`, **viewport**
+(`width=device-width, initial-scale=1, viewport-fit=cover`), optional title/favicon/CSS/JS,
+and `<body>`. Empty `DocumentOptions{}` already includes the viewport — no field to set.
+
 ## SSR HTML Templates
 
 Components that need a custom SSR template implement `RenderHTML() string` in their `html.go` file:
