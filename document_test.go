@@ -114,3 +114,53 @@ func indexOfMeta(s, needle string) int {
 	idx := strings.Index(s, needle)
 	return idx
 }
+
+// TestDocumentSEOMetadata locks in the per-page metadata a multi-page static
+// site needs to rank each URL on its own. Open Graph tags must use
+// property=, not name= — a crawler reading OG ignores the name= form, so
+// getting this wrong yields tags that look right in the source and do
+// nothing.
+func TestDocumentSEOMetadata(t *testing.T) {
+	opts := DocumentOptions{
+		Title:       "Oftalmología en Chillán",
+		Description: "Atención oftalmológica accesible en el centro de Chillán.",
+		Canonical:   "https://monjitaschillan.cl/especialidades/oftalmologia/",
+		Image:       "https://monjitaschillan.cl/img/consultorio.webp",
+		JSONLD:      `{"@context":"https://schema.org","@type":"MedicalClinic"}`,
+	}
+
+	got := DocumentString(opts, Div().Text("contenido"))
+
+	for _, want := range []string{
+		`<meta name='description' content='Atención oftalmológica accesible en el centro de Chillán.'>`,
+		`<meta property='og:description' content='Atención oftalmológica accesible en el centro de Chillán.'>`,
+		`<meta property='og:title' content='Oftalmología en Chillán'>`,
+		`<link rel='canonical' href='https://monjitaschillan.cl/especialidades/oftalmologia/'>`,
+		`<meta property='og:url' content='https://monjitaschillan.cl/especialidades/oftalmologia/'>`,
+		`<meta property='og:image' content='https://monjitaschillan.cl/img/consultorio.webp'>`,
+		`<script type='application/ld+json'>{"@context":"https://schema.org","@type":"MedicalClinic"}</script>`,
+	} {
+		if !strings.Contains(got, want) {
+			t.Errorf("missing %s\ngot:\n%s", want, got)
+		}
+	}
+}
+
+// TestDocumentOmitsUnsetSEOFields guards the zero value: a document that
+// declares no SEO metadata must not emit empty meta tags, which are worse
+// than absent ones (an empty description competes with the crawler's own
+// snippet extraction).
+func TestDocumentOmitsUnsetSEOFields(t *testing.T) {
+	got := DocumentString(DocumentOptions{Title: "Solo título"}, Div())
+
+	for _, unwanted := range []string{
+		`name='description'`, `rel='canonical'`, `og:url`, `og:image`, `application/ld+json`,
+	} {
+		if strings.Contains(got, unwanted) {
+			t.Errorf("emitted %s for an unset field\ngot:\n%s", unwanted, got)
+		}
+	}
+	if !strings.Contains(got, `<meta property='og:title' content='Solo título'>`) {
+		t.Errorf("og:title should follow a set Title, got:\n%s", got)
+	}
+}
