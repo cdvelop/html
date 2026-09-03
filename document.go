@@ -26,7 +26,10 @@ type DocumentOptions struct {
 	// <script type="application/ld+json">. It stays a string because its
 	// shape is caller-defined (LocalBusiness, MedicalClinic, Service, …) and
 	// modelling every schema.org type is not this package's job. Emitted
-	// verbatim — the caller is responsible for it being valid JSON.
+	// verbatim via dom.Raw/dom.Trust — HTML-escaping it would corrupt the
+	// JSON (quotes become &quot;) — so the caller is responsible for it being
+	// valid JSON built from their own data, never HTML content from a
+	// request/database/third party passed straight through.
 	JSONLD string
 }
 
@@ -69,7 +72,7 @@ func Document(opts DocumentOptions, body ...Component) *Element {
 		head.Child(metaProperty("og:image", opts.Image))
 	}
 	if opts.JSONLD != "" {
-		head.Child(NewElement("script").Attr("type", "application/ld+json").Text(opts.JSONLD))
+		head.Child(NewElement("script").Attr("type", "application/ld+json").Raw(Trust(opts.JSONLD)))
 	}
 	if opts.FaviconURL != "" {
 		head.Child(NewElement("link").NoCloseTag().Attr("rel", "icon").Attr("href", opts.FaviconURL))
