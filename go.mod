@@ -3,6 +3,6 @@ module github.com/tinywasm/html
 go 1.25.2
 
 require (
-	github.com/tinywasm/dom v0.13.8
+	github.com/tinywasm/dom v0.13.9
 	github.com/tinywasm/fmt v0.25.7
 )
