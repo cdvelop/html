@@ -3,9 +3,9 @@
 package main
 
 import (
-	"github.com/tinywasm/dom"
-	. "github.com/tinywasm/html"
-	"github.com/tinywasm/fmt"
+	"webtyp.com/dom"
+	. "webtyp.com/html"
+	"webtyp.com/fmt"
 )
 
 // --- App State & Components ---
@@ -75,7 +75,7 @@ func (a *App) Render() *dom.Element {
 func (a *App) renderAbout() *dom.Element {
 	return Div().Child(
 		H1().Text("Sobre Esta Libreria."),
-		P().Text("tinywasm/dom is a minimalist, WASM-optimized DOM toolkit for Go."),
+		P().Text("webtyp/dom is a minimalist, WASM-optimized DOM toolkit for Go."),
 		P().Text("It features a JSX-like Builder API, Elm-inspired state management, and no Virtual DOM overhead."),
 	).Class("card")
 }

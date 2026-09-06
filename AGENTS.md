@@ -1,14 +1,14 @@
-# Agent Guide — `tinywasm/html`
+# Agent Guide — `webtyp/html`
 
 Constraints for agents working on the HTML tag builder. Read this before any change.
 
 ---
 
-## Construction Harness — typed & explicit (the TinyWasm approach)
+## Construction Harness — typed & explicit (the WebTyp approach)
 
-This library is the **tag builder** layer of TinyWasm's construction harness: the typed, explicit API
+This library is the **tag builder** layer of WebTyp's construction harness: the typed, explicit API
 is what keeps an agent that doesn't know the library from building wrong code. Model it on
-`tinywasm/json` (typed methods per primitive, zero `any` in the data path).
+`webtyp/json` (typed methods per primitive, zero `any` in the data path).
 
 - **No `any` in the builder.** Tag constructors are **no-arg** (`Span()`, `Div()`, `Button()`); compose
   via typed `*dom.Element` methods (`Text`, `Child`, `Attr`, `Class`, `Set`). Never a `Tag(...any)`
@@ -21,19 +21,19 @@ is what keeps an agent that doesn't know the library from building wrong code. M
 - **Docs are minimal "how" instructions, not long skills** — if a rule must be *remembered*, close it
   with types, not prose.
 
-(Ecosystem rationale: `tinywasm/app/docs/CONSTRUCTION_HARNESS.md`.)
+(Ecosystem rationale: `webtyp/app/docs/CONSTRUCTION_HARNESS.md`.)
 
 ---
 
 ## WASM / TinyGo
 
-- No Go stdlib: use `github.com/tinywasm/fmt`. DOM types via `github.com/tinywasm/dom` (dot-imported),
+- No Go stdlib: use `webtyp.com/fmt`. DOM types via `webtyp.com/dom` (dot-imported),
   never `syscall/js`. `switch` not `map`; no `defer/recover`; embed `dom.Element` by value.
 
 ## Testing & Docs
 
 ```bash
-go install github.com/tinywasm/devflow/cmd/gotest@latest
+go install webtyp.com/devflow/cmd/gotest@latest
 gotest
 ```
 

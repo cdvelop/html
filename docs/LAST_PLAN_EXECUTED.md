@@ -54,8 +54,8 @@ Esta librería es la dueña declarada del shell. Que hoy `assetmin` además
 mantenga su propia copia escrita a mano (`assetmin/html.go:44`) es una deuda de
 principio 9 que se corrige en el plan de aquel repo; no cambia quién es el dueño.
 
-Tampoco puede resolverlo `tinywasm/css`: una etiqueta `<meta>` no es CSS. Ni
-`tinywasm/devbrowser`: inyectarla en el navegador de desarrollo haría que el
+Tampoco puede resolverlo `webtyp/css`: una etiqueta `<meta>` no es CSS. Ni
+`webtyp/devbrowser`: inyectarla en el navegador de desarrollo haría que el
 emulador mostrara un HTML que el servidor real no sirve — el peor tipo de
 diferencia, la que sólo aparece en producción.
 
@@ -82,7 +82,7 @@ head.Child(NewElement("meta").NoCloseTag().
 
 `viewport-fit=cover` es el que menos se conoce y el que más consecuencias tiene
 aguas abajo: es la **precondición** de los tokens de safe area que
-`tinywasm/css` va a declarar. Sin esta línea, aquel trabajo no tiene efecto
+`webtyp/css` va a declarar. Sin esta línea, aquel trabajo no tiene efecto
 observable.
 
 ### 2.2 Lo que no se añade
@@ -116,7 +116,7 @@ En `tests/`, siguiendo el patrón `uc_*_test.go` y con aserciones de stdlib:
    en silencio).
 
 ```bash
-go install github.com/tinywasm/devflow/cmd/gotest@latest
+go install webtyp.com/devflow/cmd/gotest@latest
 gotest
 ```
 
@@ -134,7 +134,7 @@ gotest
 
 - El `index.html` que `assetmin` escribe a mano y su plantilla: son de aquel
   repo, tienen su propio plan.
-- Los tokens de safe area (`env(safe-area-inset-*)`): son de `tinywasm/css`.
+- Los tokens de safe area (`env(safe-area-inset-*)`): son de `webtyp/css`.
   Este plan sólo crea la condición para que funcionen.
 - Reconciliar las dos implementaciones del shell (que `assetmin` consuma
   `DocumentString`): es la corrección de fondo del principio 9, más grande que

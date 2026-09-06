@@ -5,8 +5,8 @@ package html_test
 import (
 	"testing"
 
-	"github.com/tinywasm/dom"
-	. "github.com/tinywasm/html"
+	"webtyp.com/dom"
+	. "webtyp.com/html"
 )
 
 // mountCountComp counts how many times Init is called — used to detect double-mount.

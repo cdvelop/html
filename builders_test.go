@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tinywasm/fmt"
-	. "github.com/tinywasm/html"
+	"webtyp.com/fmt"
+	. "webtyp.com/html"
 )
 
 func TestDiv_Basic(t *testing.T) {

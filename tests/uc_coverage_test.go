@@ -5,9 +5,9 @@ package html_test
 import (
 	"testing"
 
-	"github.com/tinywasm/dom"
-	. "github.com/tinywasm/html"
-	"github.com/tinywasm/fmt"
+	"webtyp.com/dom"
+	. "webtyp.com/html"
+	"webtyp.com/fmt"
 )
 
 func TestCoverageElementFactories(t *testing.T) {

@@ -1,7 +1,7 @@
 package html
 
 import (
-	. "github.com/tinywasm/dom"
+	. "webtyp.com/dom"
 )
 
 // Block containers

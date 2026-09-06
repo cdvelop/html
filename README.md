@@ -1,22 +1,22 @@
-# tinywasm/html
+# webtyp/html
 <img src="docs/img/badges.svg">
 
-HTML element builder API for TinyWasm components.
+HTML element builder API for WebTyp components.
 
 ## Overview
 
-`tinywasm/html` provides declarative HTML element builders for use in TinyWasm components.
-It was separated from `tinywasm/dom` so that `dom` can focus solely on DOM manipulation and syscall.
+`webtyp/html` provides declarative HTML element builders for use in WebTyp components.
+It was separated from `webtyp/dom` so that `dom` can focus solely on DOM manipulation and syscall.
 
 ## Installation
 
-    go get github.com/tinywasm/html
+    go get webtyp.com/html
 
 ## Usage (dot-import)
 
     import (
-        . "github.com/tinywasm/html"  // Div, Span, H1, Nav, Button...
-        . "github.com/tinywasm/dom"   // Event, Component, Render, Append
+        . "webtyp.com/html"  // Div, Span, H1, Nav, Button...
+        . "webtyp.com/dom"   // Event, Component, Render, Append
     )
 
     func (c *MyComponent) Render() *dom.Element {
@@ -41,7 +41,7 @@ Components that need a custom SSR template implement `RenderHTML() string` in th
     //go:build !wasm
     package mycomponent
 
-    import . "github.com/tinywasm/html"
+    import . "webtyp.com/html"
 
     func (c *MyComponent) RenderHTML() string {
         return Div().Set(clsRoot.AsAttr()).String()
@@ -59,6 +59,6 @@ Special: A(href), Input(type), Option, SelectedOption, Br, Hr
 
 ## Related Packages
 
-- [tinywasm/dom](https://github.com/tinywasm/dom) — DOM manipulation, Element type, lifecycle interfaces
-- [tinywasm/svg](https://github.com/tinywasm/svg) — SVG builders + icon sprite
-- [tinywasm/image](https://github.com/tinywasm/image) — Image builders
+- [webtyp/dom](https://github.com/webtyp/dom) — DOM manipulation, Element type, lifecycle interfaces
+- [webtyp/svg](https://github.com/webtyp/svg) — SVG builders + icon sprite
+- [webtyp/image](https://github.com/webtyp/image) — Image builders

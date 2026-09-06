@@ -1,8 +1,8 @@
-module github.com/tinywasm/html
+module webtyp.com/html
 
 go 1.25.2
 
 require (
-	github.com/tinywasm/dom v0.13.9
-	github.com/tinywasm/fmt v0.25.7
+	webtyp.com/dom v0.13.9
+	webtyp.com/fmt v0.25.7
 )

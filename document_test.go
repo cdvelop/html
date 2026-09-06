@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/tinywasm/html"
+	. "webtyp.com/html"
 )
 
 func TestDocument(t *testing.T) {

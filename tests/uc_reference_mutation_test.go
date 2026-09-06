@@ -7,8 +7,8 @@ import (
 	"syscall/js"
 	"testing"
 
-	"github.com/tinywasm/dom"
-	. "github.com/tinywasm/html"
+	"webtyp.com/dom"
+	. "webtyp.com/html"
 )
 
 func TestReference_SetValue_PreservesListeners(t *testing.T) {

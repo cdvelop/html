@@ -6,8 +6,8 @@ import (
 	"syscall/js"
 	"testing"
 
-	"github.com/tinywasm/dom"
-	. "github.com/tinywasm/html"
+	"webtyp.com/dom"
+	. "webtyp.com/html"
 )
 
 // EventComponent registers listeners

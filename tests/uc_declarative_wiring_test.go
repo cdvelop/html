@@ -5,8 +5,8 @@ package html_test
 import (
 	"testing"
 
-	"github.com/tinywasm/dom"
-	. "github.com/tinywasm/html"
+	"webtyp.com/dom"
+	. "webtyp.com/html"
 )
 
 // R1: BindText patterns capture state updated after Signal.Set()

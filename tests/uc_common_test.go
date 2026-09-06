@@ -6,7 +6,7 @@ import (
 	"syscall/js"
 	"testing"
 
-	"github.com/tinywasm/dom"
+	"webtyp.com/dom"
 )
 
 // MockComponent is a simple component for testing.

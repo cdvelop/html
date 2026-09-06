@@ -11,7 +11,7 @@ package html
 //
 //	//go:build !wasm
 //	package mycomponent
-//	import . "github.com/tinywasm/html"
+//	import . "webtyp.com/html"
 //
 //	func (c *MyComponent) RenderHTML() string {
 //	    return Div(clsRoot.AsAttr()).String()

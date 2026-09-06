@@ -5,7 +5,7 @@ package html_test
 import (
 	"testing"
 
-	. "github.com/tinywasm/html"
+	. "webtyp.com/html"
 )
 
 func TestRewriteAssetURLs(t *testing.T) {
